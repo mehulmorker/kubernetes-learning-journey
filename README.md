@@ -23,7 +23,7 @@ This repository documents my comprehensive journey learning Kubernetes from scra
 
 | Day | Topic | Status | Completion Date | Notes |
 |-----|-------|--------|----------------|-------|
-| **Day 1** | Container Fundamentals | ⬜ | YYYY-MM-DD | Docker basics, first container |
+| **Day 1** | Container Fundamentals | ✅ | 2025-11-05 | Docker basics, first container |
 | **Day 2** | Kubernetes Setup & Pods | ⬜ | YYYY-MM-DD | Minikube, kubectl, first Pod |
 | **Day 3** | Deployments | ⬜ | YYYY-MM-DD | ReplicaSets, rolling updates |
 | **Day 4** | Services & Networking | ⬜ | YYYY-MM-DD | ClusterIP, NodePort, LoadBalancer |
@@ -186,9 +186,9 @@ kubernetes-learning-journey/
 ## 🎯 Learning Goals
 
 ### Short-term Goals (Weeks 1-4)
-- [x] Understand core Kubernetes concepts
-- [x] Deploy and manage basic applications
-- [x] Configure networking and storage
+- [ ] Understand core Kubernetes concepts
+- [ ] Deploy and manage basic applications
+- [ ] Configure networking and storage
 - [ ] Build a complete multi-tier application
 - [ ] Implement service discovery and load balancing
 
