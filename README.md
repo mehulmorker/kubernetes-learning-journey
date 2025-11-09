@@ -24,8 +24,8 @@ This repository documents my comprehensive journey learning Kubernetes from scra
 | Day | Topic | Status | Completion Date | Notes |
 |-----|-------|--------|----------------|-------|
 | **Day 1** | Container Fundamentals | ✅ | 2025-11-05 | Docker basics, first container |
-| **Day 2** | Kubernetes Setup & Pods | ⬜ | YYYY-MM-DD | Minikube, kubectl, first Pod |
-| **Day 3** | Deployments | ⬜ | YYYY-MM-DD | ReplicaSets, rolling updates |
+| **Day 2** | Kubernetes Setup & Pods | ✅ | 2025-11-07 | Minikube, kubectl, first Pod |
+| **Day 3** | Deployments | ✅ | 2025-11-08 | ReplicaSets, rolling updates |
 | **Day 4** | Services & Networking | ⬜ | YYYY-MM-DD | ClusterIP, NodePort, LoadBalancer |
 | **Day 5** | ConfigMaps & Secrets | ⬜ | YYYY-MM-DD | Configuration management |
 | **Day 6** | Volumes & Storage | ⬜ | YYYY-MM-DD | PV, PVC, StorageClass |
