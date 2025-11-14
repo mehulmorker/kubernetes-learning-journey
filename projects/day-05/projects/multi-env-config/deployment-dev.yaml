@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: myapp
+        env: dev
+    spec:
+      containers:
+        - name: app
+          image: node-k8s-demo:config-v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: app-config-dev

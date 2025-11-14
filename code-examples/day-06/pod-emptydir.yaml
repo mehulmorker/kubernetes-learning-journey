@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: emptydir-demo
+spec:
+  containers:
+  # Container 1: Writer
+  - name: writer
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true; do
+          echo "$(date) - Writing to shared volume" >> /data/log.txt;
+          sleep 5;
+        done
+    volumeMounts:
+    - name: shared-data
+      mountPath: /data
+  
+  # Container 2: Reader
+  - name: reader
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true; do
+          echo "=== Reading from shared volume ===";
+          tail -n 5 /data/log.txt;
+          sleep 10;
+        done
+    volumeMounts:
+    - name: shared-data
+      mountPath: /data
+  
+  volumes:
+  - name: shared-data
+    emptyDir: {}        # Empty directory
+
+

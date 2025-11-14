@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app-with-config
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-config-demo
+  template:
+    metadata:
+      labels:
+        app: node-config-demo
+    spec:
+      containers:
+        - name: node-app
+          image: node-k8s-demo:config-v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          # Method 1: Individual env vars from ConfigMap
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: node-app-config
+                  key: PORT
+
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: node-app-config
+                  key: LOG_LEVEL
+
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: node-app-config
+                  key: NODE_ENV

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-app-config
+  labels:
+    app: node-demo
+data:
+  # Simple key-value pairs
+  PORT: "8080"
+  LOG_LEVEL: "info"
+  NODE_ENV: "production"
+
+  # Multi-line values
+  app.properties: |
+    server.port=8080
+    server.host=0.0.0.0
+    log.level=info
+
+  # JSON config
+  features.json: |
+    {
+      "newUI": true,
+      "darkMode": false,
+      "maxUsers": 1000
+    }

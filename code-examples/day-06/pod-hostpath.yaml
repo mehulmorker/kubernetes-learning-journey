@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-demo
+spec:
+  containers:
+  - name: container
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true; do
+          echo "$(date) - Node log entry" >> /host-logs/app.log;
+          ls -lh /host-logs/;
+          sleep 10;
+        done
+    volumeMounts:
+    - name: host-volume
+      mountPath: /host-logs
+  
+  volumes:
+  - name: host-volume
+    hostPath:
+      path: /tmp/k8s-logs      # Path on Node
+      type: DirectoryOrCreate  # Create if doesn't exist
+
+

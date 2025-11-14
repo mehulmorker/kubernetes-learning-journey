@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-app-v2
+  labels:
+    app: node-demo
+    version: v2
+spec:
+  containers:
+  - name: node-app
+    image: node-k8s-demo:v2
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 3000
+

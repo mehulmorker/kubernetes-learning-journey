@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sticky-service
+spec:
+  selector:
+    app: node-demo
+  sessionAffinity: ClientIP      # Sticky sessions based on client IP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600       # 1 hour timeout
+  ports:
+  - port: 80
+    targetPort: 3000
+

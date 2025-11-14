@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: log-analyzer
+spec:
+  containers:
+    # Web server generating logs
+    - name: web-server
+      image: nginx:alpine
+      volumeMounts:
+        - name: logs
+          mountPath: /var/log/nginx
+
+    # Log analyzer
+    - name: analyzer
+      image: alpine
+      command: ["/bin/sh", "-c"]
+      args:
+        - while true; do
+          echo "=== Log Analysis ===";
+          echo "Total requests:";
+          wc -l /logs/access.log 2>/dev/null || echo "No logs yet";
+          sleep 30;
+          done
+      volumeMounts:
+        - name: logs
+          mountPath: /logs
+          readOnly: true
+
+  volumes:
+    - name: logs
+      emptyDir: {}
+

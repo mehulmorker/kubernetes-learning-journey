@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-pvc
+spec:
+  containers:
+  - name: app
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true; do
+          echo "$(date) - Persistent data!" >> /data/persistent.log;
+          echo "Content of /data:";
+          ls -lh /data/;
+          sleep 10;
+        done
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /data
+  
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: my-pvc      # Reference the PVC
+
+

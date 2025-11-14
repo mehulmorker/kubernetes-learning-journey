@@ -1,0 +1,21 @@
+{
+  "name": "node-k8s-demo",
+  "version": "1.0.0",
+  "description": "A simple Node.js Express app for Kubernetes learning",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "kubernetes",
+    "docker",
+    "nodejs",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+

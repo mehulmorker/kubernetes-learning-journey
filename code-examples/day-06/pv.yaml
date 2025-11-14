@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 1Gi                    # Size
+  
+  accessModes:
+  - ReadWriteOnce                   # Access mode
+  
+  persistentVolumeReclaimPolicy: Retain   # Retain, Delete, or Recycle
+  
+  storageClassName: manual          # Storage class name
+  
+  hostPath:                         # Using hostPath for demo
+    path: /mnt/data                 # (In production, use NFS, cloud storage, etc.)
+    type: DirectoryOrCreate
+
+

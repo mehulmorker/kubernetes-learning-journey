@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce           # Must match PV
+  
+  resources:
+    requests:
+      storage: 500Mi        # Request 500Mi (PV has 1Gi, so it fits)
+  
+  storageClassName: manual  # Must match PV
+  
+  selector:                 # Optional: select specific PV
+    matchLabels:
+      type: local
+
+

@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: backup
+        image: alpine
+        command: ["/bin/sh", "-c"]
+        args:
+          - tar czf /backup/backup.tar.gz -C /data . &&
+            echo "Backup completed" &&
+            ls -lh /backup/
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          readOnly: true
+        - name: backup
+          mountPath: /backup
+      restartPolicy: Never
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: backup-test-pvc
+      - name: backup
+        hostPath:
+          path: /tmp/backups
+          type: DirectoryOrCreate
+
+
