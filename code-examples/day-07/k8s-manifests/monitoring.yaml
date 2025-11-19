@@ -1,0 +1,21 @@
+# Monitoring Pod for Challenge 2: Monitoring Dashboard
+apiVersion: v1
+kind: Pod
+metadata:
+  name: monitoring
+  namespace: ecommerce
+spec:
+  containers:
+  - name: monitor
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - while true; do
+          echo "=== System Status ===";
+          echo "Checking services...";
+          wget -qO- http://frontend-service/health;
+          wget -qO- http://backend-service:3000/health;
+          echo "";
+          sleep 30;
+        done
+

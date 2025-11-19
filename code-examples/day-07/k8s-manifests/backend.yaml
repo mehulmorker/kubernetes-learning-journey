@@ -1,0 +1,93 @@
+# ConfigMap for backend configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: ecommerce
+data:
+  PORT: "3000"
+  LOG_LEVEL: "info"
+  NODE_ENV: "production"
+  DB_HOST: "postgres-service.ecommerce.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_NAME: "ecommerce"
+
+---
+# Deployment for backend API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: ecommerce
+  labels:
+    app: backend
+    tier: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+      tier: api
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: api
+    spec:
+      containers:
+      - name: backend
+        image: ecommerce-backend:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres-password
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# Service for backend
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: ecommerce
+spec:
+  selector:
+    app: backend
+    tier: api
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+

@@ -1,0 +1,14 @@
+# Example: Backend with Init Container for Challenge 3
+# Add this initContainers section to backend.yaml deployment spec
+# This waits for the database to be ready before starting the backend
+
+initContainers:
+- name: wait-for-db
+  image: busybox:1.28
+  command: ['sh', '-c']
+  args:
+    - until nslookup postgres-service.ecommerce.svc.cluster.local; do
+        echo waiting for database;
+        sleep 2;
+      done
+
