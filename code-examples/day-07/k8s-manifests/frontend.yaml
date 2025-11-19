@@ -7,7 +7,7 @@ metadata:
 data:
   config.js: |
     window.API_CONFIG = {
-        API_URL: 'http://backend-service.ecommerce.svc.cluster.local:3000'
+        API_URL: '/api'
     };
 
 ---
@@ -33,39 +33,39 @@ spec:
         tier: web
     spec:
       containers:
-      - name: frontend
-        image: ecommerce-frontend:1.0
-        imagePullPolicy: Never
-        ports:
-        - containerPort: 80
-          name: http
-        volumeMounts:
-        - name: config
-          mountPath: /usr/share/nginx/html/config.js
-          subPath: config.js
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "100m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: frontend
+          image: ecommerce-frontend:1.1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/nginx/html/config.js
+              subPath: config.js
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
       volumes:
-      - name: config
-        configMap:
-          name: frontend-config
+        - name: config
+          configMap:
+            name: frontend-config
 
 ---
 # Service for frontend (NodePort for external access)
@@ -79,8 +79,7 @@ spec:
     app: frontend
     tier: web
   ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30080
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
   type: NodePort
-
