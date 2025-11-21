@@ -1,0 +1,13 @@
+# Service targets both versions
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp  # Matches both v1 and v2
+  ports:
+  - port: 80
+  type: ClusterIP
+
+

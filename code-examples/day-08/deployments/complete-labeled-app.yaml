@@ -1,0 +1,116 @@
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: ecommerce
+    app.kubernetes.io/version: "1.0.0"
+    environment: production
+    team: frontend-team
+  annotations:
+    description: "User-facing web application"
+    repository: "https://github.com/company/frontend"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frontend
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: frontend
+        app.kubernetes.io/component: web
+        app.kubernetes.io/part-of: ecommerce
+        app.kubernetes.io/version: "1.0.0"
+        environment: production
+        team: frontend-team
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: ecommerce
+    app.kubernetes.io/version: "2.0.0"
+    environment: production
+    team: backend-team
+  annotations:
+    description: "REST API backend service"
+    repository: "https://github.com/company/backend"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: backend
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: ecommerce
+        app.kubernetes.io/version: "2.0.0"
+        environment: production
+        team: backend-team
+    spec:
+      containers:
+      - name: node
+        image: node:18-alpine
+        command: ['sleep', '3600']
+        ports:
+        - containerPort: 3000
+
+---
+# Database StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: ecommerce
+    app.kubernetes.io/version: "15.0"
+    environment: production
+    team: platform-team
+  annotations:
+    description: "PostgreSQL database"
+    backup-schedule: "0 2 * * *"
+spec:
+  serviceName: database
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/component: database
+        app.kubernetes.io/part-of: ecommerce
+        environment: production
+        team: platform-team
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          value: password123
+
+

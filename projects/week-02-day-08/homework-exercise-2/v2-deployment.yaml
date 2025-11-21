@@ -1,0 +1,23 @@
+# v2-deployment.yaml (10% of traffic - canary)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: v2
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+        command: ['sh', '-c', 'echo "Version 2 - CANARY" > /usr/share/nginx/html/index.html && nginx -g "daemon off;"']
+
+

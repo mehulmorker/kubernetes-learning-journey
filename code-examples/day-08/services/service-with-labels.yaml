@@ -1,0 +1,44 @@
+# Deployment with labeled pods
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: myapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:      # Deployment finds pods with these labels
+      app: myapp
+      tier: frontend
+  template:
+    metadata:
+      labels:         # Pods get these labels
+        app: myapp
+        tier: frontend
+        version: v1.0
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+
+---
+# Service targets pods with matching labels
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+  labels:
+    app: myapp
+spec:
+  selector:           # Service finds pods with these labels
+    app: myapp
+    tier: frontend
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+
+

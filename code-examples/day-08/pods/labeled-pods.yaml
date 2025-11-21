@@ -1,0 +1,75 @@
+# Development pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-dev
+  labels:
+    app: ecommerce
+    component: frontend
+    environment: development
+    version: "1.0.0"
+    tier: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+
+---
+# Staging pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-staging
+  labels:
+    app: ecommerce
+    component: frontend
+    environment: staging
+    version: "1.1.0"
+    tier: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+
+---
+# Production pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-prod
+  labels:
+    app: ecommerce
+    component: frontend
+    environment: production
+    version: "1.0.0"
+    tier: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+
+---
+# Backend pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-prod
+  labels:
+    app: ecommerce
+    component: backend
+    environment: production
+    version: "2.0.0"
+    tier: api
+spec:
+  containers:
+  - name: node
+    image: node:18-alpine
+    command: ['sh', '-c', 'echo "Backend API" && sleep 3600']
+
+

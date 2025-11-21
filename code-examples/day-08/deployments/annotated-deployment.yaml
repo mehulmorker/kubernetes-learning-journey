@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: annotated-app
+  annotations:
+    description: "E-commerce backend API"
+    owner: "backend-team@company.com"
+    version: "2.0.0"
+    git-commit: "abc123def456"
+    deployed-by: "CI/CD pipeline"
+    deployment-date: "2024-11-19T10:30:00Z"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: app
+        image: node:18-alpine
+        command: ['sleep', '3600']
+        ports:
+        - containerPort: 8080
+
+

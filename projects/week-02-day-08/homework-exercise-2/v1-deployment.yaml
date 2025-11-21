@@ -1,0 +1,23 @@
+# v1-deployment.yaml (90% of traffic)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v1
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: myapp
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: v1
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+        command: ['sh', '-c', 'echo "Version 1" > /usr/share/nginx/html/index.html && nginx -g "daemon off;"']
+
+

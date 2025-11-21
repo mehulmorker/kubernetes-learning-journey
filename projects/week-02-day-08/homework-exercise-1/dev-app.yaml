@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-dev
+  labels:
+    app: myapp
+    environment: development
+    version: v1.0.0
+    tier: backend
+    team: teamA
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      environment: development
+  template:
+    metadata:
+      labels:
+        app: myapp
+        environment: development
+        version: v1.0.0
+        tier: backend
+        team: teamA
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+
+

@@ -1,0 +1,56 @@
+# Version 1 deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v1
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: myapp
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: v1
+    spec:
+      containers:
+      - name: app
+        image: myapp:v1
+
+---
+# Version 2 deployment (canary - 10% traffic)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+spec:
+  replicas: 1        # Only 1 replica = ~10% traffic
+  selector:
+    matchLabels:
+      app: myapp
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: myapp    # Same app label!
+        version: v2
+    spec:
+      containers:
+      - name: app
+        image: myapp:v2
+
+---
+# Service targets both versions (only uses app label)
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp       # Matches both v1 and v2!
+  ports:
+  - port: 80
+
+
