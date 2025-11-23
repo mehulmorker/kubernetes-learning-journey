@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-logger
+  labels:
+    app: logger
+spec:
+  selector:
+    matchLabels:
+      app: node-logger
+  template:
+    metadata:
+      labels:
+        app: node-logger
+    spec:
+      containers:
+        - name: logger
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              echo "Logger started on node: $(hostname)"
+              while true; do
+                echo "$(date) - Logging from node: $NODE_NAME"
+                echo "  Hostname: $(hostname)"
+                echo "  Node IP: $NODE_IP"
+                sleep 30
+              done
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

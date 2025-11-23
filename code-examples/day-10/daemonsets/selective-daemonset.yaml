@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gpu-monitor
+spec:
+  selector:
+    matchLabels:
+      app: gpu-monitor
+  template:
+    metadata:
+      labels:
+        app: gpu-monitor
+    spec:
+      # Only run on nodes with GPU
+      nodeSelector:
+        gpu: "true"              # Only nodes with label gpu=true
+      
+      containers:
+      - name: monitor
+        image: busybox
+        command:
+        - sh
+        - -c
+        - echo "GPU monitoring on $(hostname)" && sleep 3600
+

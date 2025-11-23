@@ -1,0 +1,61 @@
+# Headless Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-sts
+spec:
+  clusterIP: None
+  selector:
+    app: nginx-sts
+  ports:
+  - port: 80
+
+---
+# StatefulSet with volumeClaimTemplates
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-sts
+spec:
+  serviceName: nginx-sts
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-sts
+  template:
+    metadata:
+      labels:
+        app: nginx-sts
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: www              # Mount the PVC
+          mountPath: /usr/share/nginx/html
+        command:
+        - sh
+        - -c
+        - |
+          # Write unique data to each pod's storage
+          echo "Data from $(hostname) - $(date)" >> /usr/share/nginx/html/data.txt
+          echo "Pod: $(hostname)" > /usr/share/nginx/html/index.html
+          while true; do
+            echo "$(date) - $(hostname) is alive" >> /usr/share/nginx/html/data.txt
+            sleep 30
+          done &
+          nginx -g 'daemon off;'
+  
+  # Volume Claim Template - creates one PVC per pod
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
+
