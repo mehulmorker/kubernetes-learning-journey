@@ -1,0 +1,90 @@
+# Namespace for backend
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend-ns
+
+---
+# Backend service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: backend-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: api
+        image: node:18-alpine
+        command: ['sh', '-c']
+        args:
+          - |
+            cat > server.js << 'EOF'
+            const http = require('http');
+            const server = http.createServer((req, res) => {
+              res.writeHead(200, {'Content-Type': 'application/json'});
+              res.end(JSON.stringify({
+                message: 'Backend API',
+                namespace: 'backend-ns',
+                hostname: require('os').hostname()
+              }));
+            });
+            server.listen(3000, () => console.log('Backend listening on 3000'));
+            EOF
+            node server.js
+        ports:
+        - containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: backend-ns
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 3000
+    targetPort: 3000
+
+---
+# Namespace for frontend
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend-ns
+
+---
+# Frontend calling backend in different namespace
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend
+  namespace: frontend-ns
+spec:
+  containers:
+  - name: curl
+    image: alpine
+    command: ['sh', '-c']
+    args:
+      - |
+        apk add --no-cache curl
+        echo "Frontend in frontend-ns"
+        echo "Calling backend in backend-ns..."
+        while true; do
+          echo "=== Calling backend-service.backend-ns.svc.cluster.local ==="
+          curl -s http://backend-service.backend-ns.svc.cluster.local:3000
+          echo ""
+          sleep 10
+        done
+
+

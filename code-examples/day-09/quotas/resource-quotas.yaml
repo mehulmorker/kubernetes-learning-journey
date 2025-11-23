@@ -1,0 +1,54 @@
+# Development namespace with quotas
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-limited
+
+---
+# ResourceQuota for dev namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: dev-quota
+  namespace: dev-limited
+spec:
+  hard:
+    # Compute resources
+    requests.cpu: "2"           # Total CPU requests: 2 cores
+    requests.memory: "4Gi"      # Total memory requests: 4GB
+    limits.cpu: "4"             # Total CPU limits: 4 cores
+    limits.memory: "8Gi"        # Total memory limits: 8GB
+    
+    # Object counts
+    pods: "10"                  # Max 10 pods
+    services: "5"               # Max 5 services
+    configmaps: "10"            # Max 10 ConfigMaps
+    secrets: "10"               # Max 10 Secrets
+    persistentvolumeclaims: "3" # Max 3 PVCs
+    
+    # Storage
+    requests.storage: "50Gi"    # Total storage requests: 50GB
+
+---
+# Production namespace with higher quotas
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod-limited
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: prod-quota
+  namespace: prod-limited
+spec:
+  hard:
+    requests.cpu: "20"
+    requests.memory: "64Gi"
+    limits.cpu: "40"
+    limits.memory: "128Gi"
+    pods: "100"
+    services: "50"
+
+

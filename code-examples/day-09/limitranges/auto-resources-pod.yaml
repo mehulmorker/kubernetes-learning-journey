@@ -1,0 +1,12 @@
+# This pod doesn't specify resources - LimitRange will apply defaults
+apiVersion: v1
+kind: Pod
+metadata:
+  name: auto-resources
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    # 👈 No resources specified!
+
+

@@ -1,0 +1,50 @@
+# Development namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: development
+  labels:
+    environment: development
+    team: all
+  annotations:
+    description: "Development environment for all teams"
+
+---
+# Staging namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+    team: all
+  annotations:
+    description: "Staging environment for testing"
+
+---
+# Production namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    environment: production
+    team: all
+  annotations:
+    description: "Production environment - CRITICAL"
+    contact: "ops-team@company.com"
+
+---
+# Team-based namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-platform
+  labels:
+    team: platform
+    cost-center: engineering
+  annotations:
+    description: "Platform team namespace"
+    owner: "platform-team@company.com"
+
+

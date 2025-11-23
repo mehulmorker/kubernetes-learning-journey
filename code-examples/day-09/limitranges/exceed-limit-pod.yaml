@@ -1,0 +1,15 @@
+# This will be REJECTED (exceeds max CPU)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: too-big
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    resources:
+      requests:
+        cpu: "3"        # 👈 Exceeds max CPU (2)
+        memory: "512Mi"
+
+

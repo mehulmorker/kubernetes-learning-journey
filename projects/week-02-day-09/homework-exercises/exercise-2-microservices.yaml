@@ -1,0 +1,150 @@
+# Exercise 2: Microservices with Namespaces
+# Create namespace per microservice
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: user-service
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: order-service
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: payment-service
+
+---
+# User Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: api
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+# Order Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: api
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+# Payment Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: payment-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+      - name: api
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: payment-service
+spec:
+  selector:
+    app: payment-service
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+# Test Pod to verify cross-namespace communication
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-client
+  namespace: user-service
+spec:
+  containers:
+  - name: curl
+    image: alpine
+    command: ['sh', '-c']
+    args:
+      - |
+        apk add --no-cache curl
+        echo "Testing cross-namespace communication..."
+        echo "Calling order-service from order-service namespace:"
+        curl -s http://order-service.order-service:80 || echo "Failed"
+        echo ""
+        echo "Calling payment-service from payment-service namespace:"
+        curl -s http://payment-service.payment-service:80 || echo "Failed"
+        sleep 3600
+
+
