@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "0 2 * * *"              # Daily at 2 AM
+  successfulJobsHistoryLimit: 3     # Keep last 3 successful jobs
+  failedJobsHistoryLimit: 1         # Keep last 1 failed job
+  concurrencyPolicy: Forbid         # Don't run if previous still running
+  
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting backup at $(date)"
+              
+              BACKUP_FILE="/backup/postgres-$(date +%Y%m%d-%H%M%S).sql"
+              
+              echo "Backing up database to $BACKUP_FILE"
+              # pg_dump -h $DB_HOST -U $DB_USER $DB_NAME > $BACKUP_FILE
+              
+              # Simulate backup
+              sleep 10
+              echo "Sample backup data" > $BACKUP_FILE
+              
+              echo "Backup completed: $(du -h $BACKUP_FILE)"
+              
+              # Cleanup old backups (keep last 7 days)
+              echo "Cleaning up old backups..."
+              find /backup -name "postgres-*.sql" -mtime +7 -delete
+              
+              echo "Backup job finished at $(date)"
+            env:
+            - name: DB_HOST
+              value: "postgres.default.svc.cluster.local"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: DB_NAME
+              value: "myapp"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+

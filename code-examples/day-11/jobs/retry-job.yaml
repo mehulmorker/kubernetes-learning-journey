@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: retry-job
+spec:
+  backoffLimit: 3             # Retry up to 3 times
+  activeDeadlineSeconds: 60   # Total time limit (60 seconds)
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Attempt started"
+          # Fail randomly (for testing)
+          if [ $((RANDOM % 2)) -eq 0 ]; then
+            echo "Simulated failure!"
+            exit 1
+          else
+            echo "Success!"
+            exit 0
+          fi
+      restartPolicy: Never
+

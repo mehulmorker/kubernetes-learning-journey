@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stage1-extract
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: extract
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          echo "Stage 1: Extracting data..."
+          echo "data1,data2,data3" > /data/extracted.csv
+          echo "Extraction complete"
+        volumeMounts:
+        - name: pipeline-data
+          mountPath: /data
+      volumes:
+      - name: pipeline-data
+        emptyDir: {}
+

@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: hello
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Job started at $(date)"
+          echo "Processing data..."
+          sleep 10
+          echo "Job completed at $(date)"
+          echo "Success!"
+      restartPolicy: Never    # Important! Never or OnFailure
+  backoffLimit: 4             # Retry up to 4 times on failure
+

@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tracked-cronjob
+  labels:
+    app: myapp
+    component: backup
+    criticality: high
+  annotations:
+    owner: "platform-team@company.com"
+    runbook: "https://wiki.company.com/runbooks/backup"
+    oncall: "https://pagerduty.com/backup-alerts"
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    metadata:
+      labels:
+        app: myapp
+        component: backup
+    spec:
+      template:
+        metadata:
+          labels:
+            app: myapp
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: busybox
+            command: ['sh', '-c', 'echo "Backup running" && sleep 10']
+

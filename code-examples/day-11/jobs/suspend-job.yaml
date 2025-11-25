@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: suspend-job
+spec:
+  suspend: true    # Job won't create pods until suspend=false
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command: ['sh', '-c', 'echo "Running" && sleep 10']
+      restartPolicy: Never
+

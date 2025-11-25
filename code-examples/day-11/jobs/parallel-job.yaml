@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parallel-job
+spec:
+  completions: 10       # Need 10 total completions
+  parallelism: 3        # Run 3 pods in parallel
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Parallel worker: $HOSTNAME"
+          TASK_ID=$((RANDOM % 1000))
+          echo "Processing task $TASK_ID"
+          sleep 10
+          echo "Task $TASK_ID complete"
+      restartPolicy: Never
+

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cronjob-schedules
+data:
+  backup-schedule: "0 2 * * *"
+  report-schedule: "0 8 * * 1-5"
+  cleanup-schedule: "0 1 * * 0"
+

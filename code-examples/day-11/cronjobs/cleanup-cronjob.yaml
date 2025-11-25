@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-old-data
+spec:
+  schedule: "0 1 * * 0"     # Weekly on Sunday at 1 AM
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: cleanup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting cleanup at $(date)"
+              
+              echo "Connecting to database..."
+              # psql -h $DB_HOST -U $DB_USER -d $DB_NAME <<EOF
+              # DELETE FROM logs WHERE created_at < NOW() - INTERVAL '30 days';
+              # DELETE FROM temp_data WHERE created_at < NOW() - INTERVAL '7 days';
+              # VACUUM ANALYZE;
+              # EOF
+              
+              # Simulate cleanup
+              sleep 5
+              echo "Deleted old logs"
+              sleep 5
+              echo "Deleted temp data"
+              sleep 5
+              echo "Database optimized"
+              
+              echo "Cleanup completed at $(date)"
+            env:
+            - name: DB_HOST
+              value: "postgres.default.svc.cluster.local"
+            - name: DB_USER
+              value: "cleanup_user"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cleanup-secret
+                  key: password
+            - name: DB_NAME
+              value: "myapp"
+

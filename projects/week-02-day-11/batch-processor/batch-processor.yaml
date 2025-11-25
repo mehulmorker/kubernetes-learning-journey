@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: batch-processor
+spec:
+  completions: 100
+  parallelism: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: processor
+        image: python:3.9-slim
+        command:
+        - python
+        - -c
+        - |
+          import time
+          import random
+          import os
+          
+          item_id = random.randint(1, 100)
+          print(f"Processing item {item_id}")
+          time.sleep(random.randint(1, 5))
+          
+          if random.random() < 0.1:  # 10% failure rate
+              raise Exception(f"Failed to process item {item_id}")
+          
+          print(f"Item {item_id} processed successfully")
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+

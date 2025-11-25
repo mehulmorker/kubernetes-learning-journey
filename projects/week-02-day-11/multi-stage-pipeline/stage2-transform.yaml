@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stage2-transform
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: wait-for-stage1
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for stage 1 to complete..."
+          # In production, you'd check a shared volume or API
+          sleep 10
+          echo "Stage 1 complete, proceeding..."
+        volumeMounts:
+        - name: pipeline-data
+          mountPath: /data
+      containers:
+      - name: transform
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          echo "Stage 2: Transforming data..."
+          # Wait for stage1 to complete
+          while [ ! -f /data/extracted.csv ]; do
+            echo "Waiting for extraction..."
+            sleep 5
+          done
+          cat /data/extracted.csv | tr ',' '\n' > /data/transformed.txt
+          echo "Transformation complete"
+        volumeMounts:
+        - name: pipeline-data
+          mountPath: /data
+      volumes:
+      - name: pipeline-data
+        emptyDir: {}
+

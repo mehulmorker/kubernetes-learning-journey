@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: single-job
+spec:
+  completions: 1        # Need 1 successful completion (default)
+  parallelism: 1        # Run 1 pod at a time (default)
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command: ['sh', '-c', 'echo "Processing item" && sleep 5']
+      restartPolicy: Never
+

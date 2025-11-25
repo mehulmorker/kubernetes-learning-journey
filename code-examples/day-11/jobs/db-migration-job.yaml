@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+  labels:
+    app: myapp
+    job-type: migration
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300  # 5 minutes max
+  template:
+    metadata:
+      labels:
+        app: myapp
+        job-type: migration
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migrate
+        image: node:18-alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Starting database migration..."
+          echo "Connecting to database..."
+          sleep 2
+          
+          echo "Running migrations..."
+          # In real scenario: npm run migrate, flyway migrate, etc.
+          echo "- Creating users table..."
+          sleep 2
+          echo "- Adding email column..."
+          sleep 2
+          echo "- Creating indexes..."
+          sleep 2
+          
+          echo "Migration completed successfully!"
+        env:
+        - name: DB_HOST
+          value: "postgres.default.svc.cluster.local"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: database-name
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+

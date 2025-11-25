@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: multi-job
+spec:
+  completions: 5        # Need 5 successful completions
+  parallelism: 1        # Run 1 at a time (sequential)
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Worker started: $HOSTNAME"
+          echo "Processing batch..."
+          sleep 5
+          echo "Batch complete"
+      restartPolicy: Never
+

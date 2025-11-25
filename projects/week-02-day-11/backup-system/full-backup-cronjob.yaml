@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: full-backup
+spec:
+  schedule: "0 0 * * 0"  # Weekly full backup (Sunday at midnight)
+  successfulJobsHistoryLimit: 4  # Keep 4 weeks of history
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 7200  # 2 hours max
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: busybox
+            command:
+            - sh
+            - -c
+            - |
+              echo "Full backup starting..."
+              BACKUP_DIR="/backup/full-$(date +%Y%m%d)"
+              mkdir -p $BACKUP_DIR
+              # Simulate backup
+              echo "Backup data" > $BACKUP_DIR/data.tar.gz
+              echo "Full backup complete: $BACKUP_DIR"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+

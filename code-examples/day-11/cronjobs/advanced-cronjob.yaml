@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: advanced-cron
+spec:
+  schedule: "*/5 * * * *"
+  
+  # Concurrency policies
+  concurrencyPolicy: Forbid
+  # - Allow (default): Multiple jobs can run concurrently
+  # - Forbid: Skip new run if previous still running
+  # - Replace: Cancel previous and start new
+  
+  # Starting deadline
+  startingDeadlineSeconds: 60
+  # If job misses schedule (node down, etc.), 
+  # start within 60 seconds or skip
+  
+  # History limits
+  successfulJobsHistoryLimit: 3   # Keep 3 successful
+  failedJobsHistoryLimit: 1       # Keep 1 failed
+  
+  # Suspend
+  suspend: false                  # Set true to pause
+  
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      activeDeadlineSeconds: 300
+      ttlSecondsAfterFinished: 3600  # Delete 1 hour after finish
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: worker
+            image: busybox
+            command: ['sh', '-c', 'echo "Advanced CronJob" && sleep 10']
+

@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: incremental-backup
+spec:
+  schedule: "0 2 * * 1-6"  # Daily incremental backup (Mon-Sat at 2 AM)
+  successfulJobsHistoryLimit: 7  # Keep a week of history
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 3600  # 1 hour max
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: busybox
+            command:
+            - sh
+            - -c
+            - |
+              echo "Incremental backup starting..."
+              BACKUP_DIR="/backup/incr-$(date +%Y%m%d)"
+              mkdir -p $BACKUP_DIR
+              echo "Incremental data" > $BACKUP_DIR/delta.tar.gz
+              echo "Incremental backup complete"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: backup-pvc
+

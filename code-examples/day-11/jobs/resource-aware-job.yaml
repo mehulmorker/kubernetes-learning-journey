@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: resource-aware-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: worker
+        image: myapp
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"  # Don't forget storage!
+

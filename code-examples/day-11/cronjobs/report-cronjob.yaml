@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: daily-report
+spec:
+  schedule: "0 8 * * 1-5"    # Weekdays at 8 AM
+  
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: report-generator
+            image: python:3.9-slim
+            command:
+            - python
+            - -c
+            - |
+              from datetime import datetime
+              import time
+              
+              print(f"Generating daily report at {datetime.now()}")
+              
+              print("Fetching data from database...")
+              time.sleep(3)
+              
+              print("Calculating metrics...")
+              time.sleep(3)
+              
+              print("Creating charts...")
+              time.sleep(3)
+              
+              print("Generating PDF...")
+              time.sleep(3)
+              
+              report_file = f"/reports/daily-report-{datetime.now().strftime('%Y%m%d')}.pdf"
+              print(f"Report saved to {report_file}")
+              
+              print("Sending email notification...")
+              time.sleep(2)
+              
+              print("Report generation complete!")
+            volumeMounts:
+            - name: reports
+              mountPath: /reports
+          volumes:
+          - name: reports
+            persistentVolumeClaim:
+              claimName: reports-pvc
+

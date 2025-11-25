@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: image-list
+data:
+  images.txt: |
+    image1.jpg
+    image2.jpg
+    image3.jpg
+    image4.jpg
+    image5.jpg
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: image-processor
+spec:
+  completions: 5        # 5 images to process
+  parallelism: 2        # Process 2 at a time
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: processor
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Image processor starting: $HOSTNAME"
+          
+          # Read image list
+          IMAGE=$(head -n $((JOB_COMPLETION_INDEX + 1)) /config/images.txt | tail -n 1)
+          
+          echo "Processing image: $IMAGE"
+          echo "- Resizing..."
+          sleep 2
+          echo "- Compressing..."
+          sleep 2
+          echo "- Uploading to storage..."
+          sleep 2
+          echo "Image $IMAGE processed successfully!"
+        env:
+        - name: JOB_COMPLETION_INDEX
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+        volumeMounts:
+        - name: images
+          mountPath: /config
+      volumes:
+      - name: images
+        configMap:
+          name: image-list
+

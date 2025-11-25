@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-step-1
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: step1
+        image: busybox
+        command: ['sh', '-c', 'echo "Step 1" > /shared/step1.done']
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+      volumes:
+      - name: shared
+        emptyDir: {}
+

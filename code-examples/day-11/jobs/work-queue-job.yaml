@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: work-queue-job
+spec:
+  # No completions specified - pods pull from queue
+  parallelism: 5        # 5 workers pulling from queue
+  template:
+    spec:
+      containers:
+      - name: worker
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Worker $HOSTNAME starting"
+          # In real scenario: pull items from queue (Redis, RabbitMQ)
+          # Process until queue empty
+          for i in 1 2 3 4 5; do
+            echo "Processing item $i"
+            sleep 2
+          done
+          echo "No more work, exiting"
+      restartPolicy: Never
+

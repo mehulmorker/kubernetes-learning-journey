@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: smart-retry-job
+spec:
+  backoffLimit: 6
+  podFailurePolicy:
+    rules:
+    - action: FailJob              # Don't retry on certain errors
+      onExitCodes:
+        containerName: main
+        operator: In
+        values: [42]               # Exit code 42 = fail immediately
+    - action: Ignore               # Ignore certain exit codes
+      onExitCodes:
+        operator: In
+        values: [1]
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: main
+        image: busybox
+        command: ['sh', '-c', 'echo "Processing" && exit 0']
+

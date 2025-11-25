@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-step-2
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: wait-for-step1
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          while [ ! -f /shared/step1.done ]; do
+            echo "Waiting for step 1..."
+            sleep 5
+          done
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+      containers:
+      - name: step2
+        image: busybox
+        command: ['sh', '-c', 'echo "Step 2 complete"']
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+      volumes:
+      - name: shared
+        emptyDir: {}
+

@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-with-logging
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: main-job
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          for i in 1 2 3 4 5; do
+            echo "Processing $i" >> /logs/job.log
+            sleep 2
+          done
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+      
+      - name: log-shipper
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          # Ship logs to external system
+          while true; do
+            if [ -f /logs/job.log ]; then
+              echo "Shipping logs..."
+              # curl -X POST logs-service:8080 -d @/logs/job.log
+            fi
+            sleep 5
+          done
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+      
+      volumes:
+      - name: logs
+        emptyDir: {}
+

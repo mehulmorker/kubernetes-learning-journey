@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello-cron
+spec:
+  schedule: "*/2 * * * *"    # Every 2 minutes
+  jobTemplate:               # Template for Jobs
+    spec:
+      template:              # Template for Pods
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "CronJob execution at $(date)"
+              echo "Performing scheduled task..."
+              sleep 5
+              echo "Task complete!"
+          restartPolicy: OnFailure
+
